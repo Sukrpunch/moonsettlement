@@ -38,10 +38,11 @@
             gap: 0.5rem;
         }
         .logo-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 0.5rem;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 0.375rem;
             overflow: hidden;
+            flex-shrink: 0;
         }
         .logo-icon img {
             width: 100%;
@@ -451,6 +452,19 @@
         </div>
     </section>
 
+    <!-- Hero Image Gallery -->
+    <section style="background: rgba(15, 23, 42, 0.5); border-top: 1px solid #334155; border-bottom: 1px solid #334155;">
+        <div class="container">
+            <h2>The Lunar Vision</h2>
+            <div style="max-width: 900px; margin: 0 auto;">
+                <img src="images/hero.png" alt="Starship on Lunar Surface" style="width: 100%; border-radius: 0.75rem; margin-bottom: 2rem; box-shadow: 0 20px 25px rgba(0, 0, 0, 0.3);">
+                <p style="color: #cbd5e1; text-align: center; font-size: 0.95rem;">
+                    The first permanent human settlement on the Moon is being built now. This is the infrastructure, the technology, and the people who make it possible.
+                </p>
+            </div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
     <section id="contact">
         <div class="container">
@@ -459,21 +473,24 @@
                 Interested in joining the lunar economy? Have questions about MoonSettlement? Reach out — we'd love to hear from you.
             </p>
             <div class="contact-form">
-                <form id="contactForm">
+                <div id="form-success" style="display: none; text-align: center; padding: 2rem; color: #60a5fa; font-size: 1.05rem; font-weight: 600;">
+                    ✅ Message received! We'll get back to you within 24 hours.
+                </div>
+                <form id="contactForm" action="https://formspree.io/f/xyzabnop" method="POST">
                     <div class="form-group">
-                        <label for="name">Name</label>
+                        <label for="name">Name *</label>
                         <input type="text" id="name" name="name" placeholder="Your name" required>
                     </div>
                     <div class="form-group">
-                        <label for="email">Email</label>
+                        <label for="email">Email *</label>
                         <input type="email" id="email" name="email" placeholder="your@email.com" required>
                     </div>
                     <div class="form-group">
                         <label for="message">Message</label>
-                        <textarea id="message" name="message" placeholder="Tell us what you're interested in..." rows="4" required></textarea>
+                        <textarea id="message" name="message" placeholder="Tell us what you're interested in..." rows="4"></textarea>
                     </div>
-                    <button type="submit" class="form-submit">Send Message</button>
-                    <div id="formMessage" class="form-message"></div>
+                    <button type="submit" class="form-submit">Send Message →</button>
+                    <p style="text-align: center; margin-top: 1rem; font-size: 0.8rem; color: #94a3b8;">🔒 Confidential · Response within 24 hours</p>
                 </form>
             </div>
         </div>
@@ -508,39 +525,31 @@
     </footer>
 
     <script>
-        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+        const form = document.getElementById('contactForm');
+        const success = document.getElementById('form-success');
+
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const message = document.getElementById('message').value;
-            const messageEl = document.getElementById('formMessage');
-            
+            const btn = form.querySelector('.form-submit');
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+
             try {
-                const response = await fetch('https://formspree.io/f/xyzabnop', {
+                const res = await fetch(form.action, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        name: name,
-                        email: email,
-                        message: message,
-                        _to: 'AgenticMason@gmail.com'
-                    })
+                    body: new FormData(form),
+                    headers: { 'Accept': 'application/json' }
                 });
-                
-                if (response.ok) {
-                    messageEl.className = 'form-message success';
-                    messageEl.textContent = '✅ Message sent! We\'ll get back to you soon.';
-                    document.getElementById('contactForm').reset();
+                if (res.ok) {
+                    form.style.display = 'none';
+                    success.style.display = 'block';
                 } else {
-                    messageEl.className = 'form-message error';
-                    messageEl.textContent = '❌ Error sending message. Please try again.';
+                    btn.textContent = 'Error — please try again';
+                    btn.disabled = false;
                 }
-            } catch (error) {
-                messageEl.className = 'form-message error';
-                messageEl.textContent = '❌ Error sending message. Please try again.';
+            } catch {
+                btn.textContent = 'Error — please try again';
+                btn.disabled = false;
             }
         });
     </script>
